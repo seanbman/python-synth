@@ -8,6 +8,7 @@ from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtWidgets import (
     QComboBox,
     QDial,
+    QGroupBox,
     QHBoxLayout,
     QLabel,
     QPushButton,
@@ -111,6 +112,9 @@ class ParameterControl(QWidget):
         self.value_label = QLabel()
         self.value_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         root.addWidget(self.value_label)
+        # The selected choice, spinbox value and toggle state are already visible
+        # in the editor. Repeating them below wastes an entire line per control.
+        self.value_label.setVisible(spec.control not in ("combo", "spin", "toggle"))
         self.setMinimumWidth(60)
         self.setMinimumHeight(91)
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
@@ -157,30 +161,30 @@ class ParameterControl(QWidget):
             self.valueChanged.emit(value)
 
 
-class CollapsibleSection(QWidget):
-    def __init__(self, title: str, parent: QWidget | None = None, expanded: bool = True):
-        super().__init__(parent)
-        self.header = QToolButton()
-        self.header.setText(title)
-        self.header.setCheckable(True)
-        self.header.setChecked(expanded)
-        self.header.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
-        self.header.clicked.connect(self._toggle)
-        self.body = QWidget()
-        self.body_layout = QHBoxLayout(self.body)
-        self.body_layout.setContentsMargins(2, 1, 2, 2)
-        self.body_layout.setSpacing(2)
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(2)
-        layout.addWidget(self.header)
-        layout.addWidget(self.body)
-        self._toggle(expanded)
+class ControlGroup(QGroupBox):
+    """A permanently visible, clearly bordered synth section."""
 
-    def _toggle(self, expanded: bool) -> None:
-        self.header.setArrowType(Qt.ArrowType.DownArrow if expanded else Qt.ArrowType.RightArrow)
-        self.body.setVisible(expanded)
-
-    def set_expanded(self, expanded: bool) -> None:
-        self.header.setChecked(expanded)
-        self._toggle(expanded)
+    def __init__(self, title: str, parent: QWidget | None = None):
+        super().__init__(title, parent)
+        self.setObjectName("synthControlGroup")
+        self.setStyleSheet("""
+            QGroupBox#synthControlGroup {
+                background-color: #eef1f0;
+                border: 1px solid #aeb9ba;
+                border-radius: 6px;
+                margin-top: 12px;
+            }
+            QGroupBox#synthControlGroup::title {
+                subcontrol-origin: margin;
+                subcontrol-position: top left;
+                left: 9px;
+                padding: 0 5px;
+                color: #25343a;
+                background-color: #eef1f0;
+                font-size: 11px;
+                font-weight: 600;
+            }
+        """)
+        self.body_layout = QHBoxLayout(self)
+        self.body_layout.setContentsMargins(6, 8, 6, 4)
+        self.body_layout.setSpacing(3)
