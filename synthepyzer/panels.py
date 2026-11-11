@@ -7,7 +7,6 @@ from pathlib import Path
 from PyQt6.QtCore import Qt, QTimer, pyqtSignal
 from PyQt6.QtWidgets import (
     QGridLayout,
-    QGroupBox,
     QHBoxLayout,
     QLabel,
     QLineEdit,
@@ -19,7 +18,7 @@ from PyQt6.QtWidgets import (
 )
 
 from .binding import StateController
-from .controls import CollapsibleSection, ParameterControl
+from .controls import ControlGroup, ParameterControl
 from .parameters import AMP_ENVELOPE, FILTER, LFO, LAYER_UTILITY, MASTER, MIXER, OSCILLATOR, ParameterSpec
 
 
@@ -40,7 +39,7 @@ class LayerPanel(QWidget):
         super().__init__(parent)
         self.layer_index = layer_index
         self.controller = controller
-        self.sections: list[CollapsibleSection] = []
+        self.sections: list[ControlGroup] = []
         root = QGridLayout(self)
         root.setContentsMargins(5, 4, 5, 4)
         root.setHorizontalSpacing(8)
@@ -48,16 +47,14 @@ class LayerPanel(QWidget):
         root.setColumnStretch(0, 1)
         root.setColumnStretch(1, 1)
 
-        utility = QGroupBox("Layer controls")
-        utility_layout = QHBoxLayout(utility)
-        utility_layout.setContentsMargins(5, 8, 5, 2)
-        utility_layout.setSpacing(2)
+        utility = ControlGroup("Layer settings")
+        utility_layout = utility.body_layout
         for spec in LAYER_UTILITY:
             add_control(utility_layout, spec, controller, layer_index)
         root.addWidget(utility, 0, 0, 1, 2)
 
         for number, osc_id in ((1, "osc1"), (2, "osc2")):
-            section = CollapsibleSection(f"Oscillator {number}")
+            section = ControlGroup(f"Oscillator {number}")
             self.sections.append(section)
             for spec in OSCILLATOR:
                 scoped = ParameterSpec(
@@ -80,7 +77,7 @@ class LayerPanel(QWidget):
             (3, 0, "Mixer", MIXER),
             (3, 1, "LFO", LFO),
         ):
-            section = CollapsibleSection(title)
+            section = ControlGroup(title)
             self.sections.append(section)
             for spec in specs:
                 add_control(section.body_layout, spec, controller, layer_index)
@@ -89,24 +86,17 @@ class LayerPanel(QWidget):
         for row in range(4):
             root.setRowStretch(row, 1)
 
-    def set_all_expanded(self, expanded: bool) -> None:
-        for section in self.sections:
-            section.set_expanded(expanded)
-
-
-class MasterPanel(QGroupBox):
+class MasterPanel(ControlGroup):
     def __init__(self, controller: StateController, parent: QWidget | None = None):
         super().__init__("Master output", parent)
-        layout = QHBoxLayout(self)
-        layout.setContentsMargins(6, 6, 6, 2)
-        layout.setSpacing(4)
+        layout = self.body_layout
         for spec in MASTER:
             add_control(layout, spec, controller)
         status = QLabel("Audio engine: not connected")
         status.setToolTip("Audio output will be connected in the audio backend milestone.")
         layout.addStretch(1)
         layout.addWidget(status)
-        self.setMaximumHeight(116)
+        self.setMaximumHeight(118)
 
 
 class PresetBrowser(QWidget):
