@@ -184,7 +184,7 @@ class PresetBrowser(QWidget):
         self._show_page()
 
     def _page_size(self) -> int:
-        row_height = max(20, self.list.fontMetrics().height() + 8)
+        row_height = max(30, self.list.fontMetrics().height() + 12, self.list.sizeHintForRow(0))
         return max(1, self.list.viewport().height() // row_height)
 
     def _show_page(self) -> None:
