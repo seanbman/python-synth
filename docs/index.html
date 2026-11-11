@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="The user manual for Synthepyzer." />
+    <title>Synthepyzer Manual</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar" aria-label="Documentation navigation">
+        <div class="sidebar__brand">
+          <a class="brand" href="#/overview" aria-label="Synthepyzer manual home">
+            <span class="brand__mark" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 17.5 8.5 13l3 3 8.5-8.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M4 20h16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              </svg>
+            </span>
+            <span>
+              <strong>Synthepyzer</strong>
+              <small>User manual</small>
+            </span>
+          </a>
+        </div>
+
+        <nav class="sidebar__nav" id="sidebar-nav"></nav>
+
+        <div class="sidebar__footer">
+          <span class="status-dot" aria-hidden="true"></span>
+          <span>Manual · first edition</span>
+        </div>
+      </aside>
+
+      <div class="page-shell">
+        <header class="topbar">
+          <button class="mobile-menu" id="mobile-menu" type="button" aria-controls="sidebar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+          </button>
+          <div class="topbar__context">Documentation</div>
+          <div class="search" id="search-wrap">
+            <svg class="search__icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.4" /><path d="m16 16 4.5 4.5" /></svg>
+            <label class="sr-only" for="search-input">Search the manual</label>
+            <input id="search-input" type="search" placeholder="Search the manual" autocomplete="off" />
+            <kbd>/</kbd>
+            <div class="search-results" id="search-results" role="listbox" aria-label="Search results" hidden></div>
+          </div>
+        </header>
+
+        <main class="main-content" id="main-content" tabindex="-1">
+          <div class="breadcrumbs" id="breadcrumbs" aria-label="Breadcrumbs"></div>
+          <div class="content-grid">
+            <article class="article" id="article" aria-live="polite"></article>
+            <aside class="page-outline" id="page-outline" aria-label="On this page"></aside>
+          </div>
+        </main>
+
+        <footer class="site-footer">
+          <span>Synthepyzer</span>
+          <span>Built for curious players.</span>
+        </footer>
+      </div>
+    </div>
+
+    <div class="mobile-overlay" id="mobile-overlay" hidden></div>
+    <script src="markdown.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

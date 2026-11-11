@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "synthepyzer"
+version = "0.1.0"
+description = "A focused two-layer MIDI software synthesizer"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+ui = ["PyQt6>=6.7"]
+
+[project.scripts]
+synthepyzer = "synthepyzer.app:main"
+
+[tool.setuptools.packages.find]
+include = ["synthepyzer*"]
