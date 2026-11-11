@@ -8,7 +8,7 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 from PyQt6.QtCore import QPoint, Qt
 from PyQt6.QtWidgets import QApplication, QScrollArea
 
-from synthepyzer.controls import ParameterControl
+from synthepyzer.controls import ControlGroup, ParameterControl
 from synthepyzer.main_window import SynthepyzerWindow
 from synthepyzer.preset import default_preset
 
@@ -63,6 +63,47 @@ class UiSmokeTests(unittest.TestCase):
                     self.assertGreaterEqual(top_left.y(), 0)
                     self.assertLessEqual(top_left.x() + control.width(), panel.width())
                     self.assertLessEqual(top_left.y() + control.height(), panel.height())
+
+    def test_sections_are_permanent_bordered_groups_and_have_no_collapse_actions(self):
+        window = SynthepyzerWindow()
+        self.addCleanup(window.close)
+        window.resize(1000, 680)
+        window.show()
+        self.app.processEvents()
+
+        view = next(action.menu() for action in window.menuBar().actions() if action.text() == "View")
+        self.assertEqual([action.text() for action in view.actions()], ["Preset Browser"])
+        for index, panel in enumerate(window.layer_panels):
+            window.tabs.setCurrentIndex(index)
+            self.app.processEvents()
+            groups = panel.findChildren(ControlGroup)
+            self.assertEqual(len(groups), 7)
+            self.assertEqual(
+                [group.title() for group in groups],
+                ["Layer settings", "Oscillator 1", "Oscillator 2",
+                 "Filter", "Amp envelope", "Mixer", "LFO"],
+            )
+            for group in groups:
+                with self.subTest(layer=index, group=group.title()):
+                    self.assertTrue(group.isVisible())
+                    self.assertFalse(group.isCheckable())
+                    self.assertIn("border:", group.styleSheet())
+                    self.assertGreater(len(group.findChildren(ParameterControl)), 0)
+
+        self.assertTrue(window.centralWidget().findChildren(ControlGroup))
+        self.assertFalse(window.findChildren(QScrollArea))
+
+    def test_choice_spin_and_toggle_values_have_no_redundant_caption(self):
+        window = SynthepyzerWindow()
+        self.addCleanup(window.close)
+        panel = window.layer_panels[0]
+        for control in panel.findChildren(ParameterControl):
+            with self.subTest(parameter=control.parameter_label):
+                if control.spec.control in ("combo", "spin", "toggle"):
+                    self.assertTrue(control.value_label.isHidden())
+                else:
+                    self.assertFalse(control.value_label.isHidden())
+                self.assertTrue(control.label.text())
 
     def test_preset_browser_uses_pages_with_no_scrollbars(self):
         window = SynthepyzerWindow()
