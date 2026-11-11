@@ -169,8 +169,8 @@ class ControlGroup(QGroupBox):
         self.setObjectName("synthControlGroup")
         self.setStyleSheet("""
             QGroupBox#synthControlGroup {
-                background-color: #eef1f0;
-                border: 1px solid #aeb9ba;
+                background-color: #414141;
+                border: 1px solid #737373;
                 border-radius: 6px;
                 margin-top: 12px;
             }
@@ -179,10 +179,23 @@ class ControlGroup(QGroupBox):
                 subcontrol-position: top left;
                 left: 9px;
                 padding: 0 5px;
-                color: #25343a;
-                background-color: #eef1f0;
+                color: #f1f1f1;
+                background-color: #414141;
                 font-size: 11px;
                 font-weight: 600;
+            }
+            QGroupBox#synthControlGroup QLabel {
+                color: #f1f1f1;
+                background: transparent;
+            }
+            QGroupBox#synthControlGroup QToolButton {
+                color: #f1f1f1;
+                background-color: #555555;
+                border: 1px solid #777777;
+                border-radius: 3px;
+            }
+            QGroupBox#synthControlGroup QToolButton:hover {
+                background-color: #666666;
             }
         """)
         self.body_layout = QHBoxLayout(self)
