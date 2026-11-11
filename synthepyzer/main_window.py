@@ -94,9 +94,6 @@ class SynthepyzerWindow(QMainWindow):
 
         view_menu = self.menuBar().addMenu("View")
         view_menu.addAction(self.preset_dock.toggleViewAction())
-        view_menu.addSeparator()
-        self._action(view_menu, "Expand All Sections", lambda: self._set_sections(True))
-        self._action(view_menu, "Collapse All Sections", lambda: self._set_sections(False))
 
         audio_menu = self.menuBar().addMenu("Audio")
         self._action(audio_menu, "Output Device…", self._backend_unavailable, enabled=False)
@@ -191,10 +188,6 @@ class SynthepyzerWindow(QMainWindow):
         current = state["layers"][index]
         for key, value in replacement.items():
             self.controller.set(("layers", str(index), key), value, "Reset active layer")
-
-    def _set_sections(self, expanded: bool) -> None:
-        for panel in self.layer_panels:
-            panel.set_all_expanded(expanded)
 
     def _backend_unavailable(self) -> None:
         QMessageBox.information(self, "Backend not connected", "Audio and MIDI device support is not connected yet.")
