@@ -1,5 +1,7 @@
 # Features
 
+> **Roadmap note:** The signal path and MIDI/performance descriptions here are the intended synthesizer behaviour. The current repo implements the editable Qt parameter model and preset storage, **not yet audible DSP or MIDI**. The approved waveform editor and filter-response plot are upcoming features. [View the exact feature audit](../development/FEATURE_AUDIT.md).
+
 Synthepyzer is a compact subtractive synthesizer. Its controls follow the path of a note: create a waveform, combine it with another, remove or emphasize frequencies, shape the note over time, and add movement.
 
 The names below are the control vocabulary for the first instrument. They are written in the same language you will see on the synth panel.

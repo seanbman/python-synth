@@ -2,6 +2,12 @@
 
 Synthepyzer can make a sound from one layer, or combine two complete synth layers into one playable patch. This gives you the weight of a stacked instrument without hiding the individual sounds that make it up.
 
+## Switching layers versus scenes
+
+The implemented navigation is **Layer A / Layer B** at the top of the instrument. There is **no Scene model or scene switcher**. Each layer has its own settings, and clicking a layer tab changes which one you edit without enabling or disabling it.
+
+The approved future visualizer will have separate **Waveform / Filter Response / LFO Shape** viewing modes; changing the graph mode will not change the patch or the active layer. Preset loading remains a separate, explicit file action.
+
 ## Layer A and Layer B
 
 Each layer has its own oscillator, mixer, filter, amp envelope, and LFO controls. Both layers listen to the selected MIDI input and respond to the same notes by default.

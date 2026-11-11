@@ -1,5 +1,7 @@
 # Getting Started
 
+> **Implementation status:** These steps describe the intended finished-product workflow. The current PyQt6 application has a working parameter/preset editor, but its real-time audio and MIDI input are **not connected yet**. The Audio and MIDI device actions are presently placeholders. For current development status, see [Feature Audit](../development/FEATURE_AUDIT.md).
+
 Your first sound should take less than a minute. This page walks through the small set of things to check before you play.
 
 ## Connect a controller

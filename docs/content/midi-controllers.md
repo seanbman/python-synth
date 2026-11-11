@@ -1,5 +1,7 @@
 # MIDI Controllers
 
+> **Implementation status:** MIDI note input, device selection, velocity, bend, wheel, pedal, and a functioning panic are **not connected in the current build**. The text below is the desired experience after the pyo/MIDI milestones, not a claim those features already work. See [Audio Engine](../development/AUDIO_ENGINE.md).
+
 Synthepyzer is designed to feel good under a real controller. A keyboard gives you the notes; your playing gives the sound its shape and energy.
 
 ## Notes and velocity

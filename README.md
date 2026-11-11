@@ -1,48 +1,37 @@
 # Synthepyzer
 
-Synthepyzer is a planned two-layer MIDI software synthesizer. The repository is currently documentation-first, with a dependency-free state and preset foundation ready for the PyQt6 UI and audio engine.
+Synthepyzer is a **two-layer PyQt6 desktop subtractive synthesizer**. Its Qt control panel, state binding, undo/redo, file browser and versioned .spyzr presets exist today. **Live audio and MIDI backends are not yet connected.** The approved sound-engine direction is **pyo 1.1.0**; it will be integrated in a later implementation milestone.
 
-## Documentation
+## Approved design and Codex handoff
 
-Start the local manual from the repository root:
+![Approved Synthepyzer magenta-accent Qt desktop interface](docs/assets/synthepyzer-approved-ui.png)
 
-```text
-python3 -m http.server 8000
-```
+The PNG above is the **approved visual reference**, not evidence the interactive graph or audio engine is already working. Use these maintained specifications before editing code:
 
-Open [http://localhost:8000/docs/](http://localhost:8000/docs/).
+- [Codex implementation plan](docs/development/CODEX_IMPLEMENTATION.md) — ordered milestones, tests and no-regression rules
+- [Approved UI contract](docs/development/APPROVED_UI.md) — visual tokens, slider layout, interaction and navigation
+- [Feature audit](docs/development/FEATURE_AUDIT.md) — implemented versus proposed features, parameter inventory
+- [Audio engine decision](docs/development/AUDIO_ENGINE.md) — pyo selection, architecture, DSP mapping, licensing
 
-## Preset foundation
+The UI uses neutral grey panels, magenta #C2187A interactive accents, native horizontal Qt sliders with rectangular handles, permanent bordered groups, Layer A/B navigation, **no collapsible sections and no scrollbars**. Generated example labels, dB and Hz units and preset names do **not** override the actual parameter model.
 
-The core model supports two stacked layers and versioned, human-readable `.spyzr` presets:
+## Run the desktop shell
 
-```text
-python3 -m unittest discover -s tests -v
-```
+    python3 -m pip install -e '.[ui]'
+    python3 -m synthepyzer.app
 
-Presets migrate forward and retain unknown fields so future controls can be added without silently discarding newer data.
+## Run all automated tests
 
-## Scroll-free desktop layout
+    QT_QPA_PLATFORM=offscreen python3 -m unittest discover -s tests -v
 
-The PyQt6 instrument window uses a fixed-viewport control grid rather than scrollable
-sections. Layer utility spans the top; oscillators sit side by side; filter and
-envelope share the next row; mixer and LFO share the bottom row; master output
-stays beneath the layer tabs. All 32 parameters on the selected layer are
-accessible without vertical or horizontal scrolling at the minimum supported
-window size (1000 × 680). The preset browser pages through results instead
-of displaying scrollbars.
+## Read the user manual
 
-Run the headless UI and state tests after any layout change:
+From the repo root:
 
-```sh
-QT_QPA_PLATFORM=offscreen python3 -m unittest discover -s tests -v
-```
+    python3 -m http.server 8000
 
-## Optional PyQt6 shell
+Open http://localhost:8000/docs/ . This manual describes the intended instrument, including some future audible and MIDI behaviours; the current application is a UI/state/preset foundation until pyo integration is complete.
 
-Install the desktop UI dependency when you are ready to run the application:
+## File format
 
-```text
-python3 -m pip install -e '.[ui]'
-python3 -m synthepyzer.app
-```
+The model supports two independently editable layers and versioned, human-readable .spyzr JSON presets. The current format version is 1. Older single-layer v0 patches migrate forward. Loading unsupported future versions fails safely and unrelated unknown fields are retained. Do not change this contract without a versioned migration and tests.
