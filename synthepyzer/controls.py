@@ -12,6 +12,7 @@ from PyQt6.QtWidgets import (
     QLabel,
     QPushButton,
     QSlider,
+    QSizePolicy,
     QSpinBox,
     QToolButton,
     QVBoxLayout,
@@ -19,6 +20,20 @@ from PyQt6.QtWidgets import (
 )
 
 from .parameters import ParameterSpec, format_value
+
+
+COMPACT_LABELS = {
+    "Enabled": "Enable",
+    "Transpose": "Transp.",
+    "Waveform": "Wave",
+    "Semitone": "Semi",
+    "Oscillator 1": "Osc 1",
+    "Oscillator 2": "Osc 2",
+    "Resonance": "Reson.",
+    "Key Track": "Key Trk",
+    "Env Amount": "Env Amt",
+    "Destination": "Dest.",
+}
 
 
 class ParameterControl(QWidget):
@@ -32,19 +47,23 @@ class ParameterControl(QWidget):
         self._updating = False
 
         root = QVBoxLayout(self)
-        root.setContentsMargins(4, 4, 4, 4)
-        root.setSpacing(2)
+        root.setContentsMargins(1, 1, 1, 1)
+        root.setSpacing(1)
         title_row = QHBoxLayout()
-        self.label = QLabel(spec.label)
+        title_row.setContentsMargins(0, 0, 0, 0)
+        title_row.setSpacing(0)
+        self.label = QLabel(COMPACT_LABELS.get(spec.label, spec.label))
+        self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label.setMinimumWidth(0)
         self.label.setToolTip(f"{spec.label}: adjust the current layer parameter")
         self.reset_button = QToolButton()
         self.reset_button.setText("↺")
+        self.reset_button.setFixedSize(17, 17)
         self.reset_button.setToolTip(f"Reset {spec.label}")
         self.reset_button.setAccessibleName(f"Reset {spec.label}")
         self.reset_button.clicked.connect(self.resetRequested)
-        title_row.addWidget(self.label)
-        title_row.addStretch(1)
-        title_row.addWidget(self.reset_button)
+        title_row.addWidget(self.label, 1)
+        title_row.addWidget(self.reset_button, 0)
         root.addLayout(title_row)
 
         if spec.control == "combo":
@@ -73,11 +92,28 @@ class ParameterControl(QWidget):
 
         self.editor.setAccessibleName(spec.label)
         self.editor.setToolTip(self.label.toolTip())
-        root.addWidget(self.editor)
+        if isinstance(self.editor, QDial):
+            self.editor.setFixedSize(48, 48)
+            self.editor.setNotchesVisible(False)
+        elif isinstance(self.editor, QSlider):
+            self.editor.setMinimumWidth(48)
+            self.editor.setFixedHeight(26)
+        else:
+            self.editor.setMinimumWidth(0)
+            self.editor.setFixedHeight(25)
+        editor_row = QVBoxLayout()
+        editor_row.setContentsMargins(0, 0, 0, 0)
+        editor_row.setSpacing(0)
+        editor_row.addStretch(1)
+        editor_row.addWidget(self.editor, 0, Qt.AlignmentFlag.AlignHCenter)
+        editor_row.addStretch(1)
+        root.addLayout(editor_row, 1)
         self.value_label = QLabel()
         self.value_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         root.addWidget(self.value_label)
-        self.setMinimumWidth(86)
+        self.setMinimumWidth(60)
+        self.setMinimumHeight(91)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
 
     def set_value(self, value: Any) -> None:
         self._updating = True
@@ -132,10 +168,11 @@ class CollapsibleSection(QWidget):
         self.header.clicked.connect(self._toggle)
         self.body = QWidget()
         self.body_layout = QHBoxLayout(self.body)
-        self.body_layout.setContentsMargins(8, 4, 8, 8)
-        self.body_layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.body_layout.setContentsMargins(2, 1, 2, 2)
+        self.body_layout.setSpacing(2)
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(2)
         layout.addWidget(self.header)
         layout.addWidget(self.body)
         self._toggle(expanded)
