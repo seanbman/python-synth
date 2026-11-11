@@ -1,9 +1,12 @@
 import os
+import tempfile
 import unittest
+from pathlib import Path
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
-from PyQt6.QtWidgets import QApplication
+from PyQt6.QtCore import QPoint, Qt
+from PyQt6.QtWidgets import QApplication, QScrollArea
 
 from synthepyzer.controls import ParameterControl
 from synthepyzer.main_window import SynthepyzerWindow
@@ -38,6 +41,49 @@ class UiSmokeTests(unittest.TestCase):
         self.app.processEvents()
         cutoff = next(control for control in window.layer_panels[0].findChildren(ParameterControl) if control.parameter_label == "Cutoff")
         self.assertEqual(cutoff.value_label.text(), "18%")
+
+    def test_every_control_fits_at_minimum_supported_window_size(self):
+        window = SynthepyzerWindow()
+        self.addCleanup(window.close)
+        window.resize(1000, 680)
+        window.show()
+        self.app.processEvents()
+
+        self.assertFalse(window.findChildren(QScrollArea))
+        for index in (0, 1):
+            window.tabs.setCurrentIndex(index)
+            self.app.processEvents()
+            panel = window.layer_panels[index]
+            controls = panel.findChildren(ParameterControl)
+            self.assertEqual(len(controls), 32)
+            for control in controls:
+                top_left = control.mapTo(panel, QPoint(0, 0))
+                with self.subTest(layer=index, parameter=control.parameter_label):
+                    self.assertGreaterEqual(top_left.x(), 0)
+                    self.assertGreaterEqual(top_left.y(), 0)
+                    self.assertLessEqual(top_left.x() + control.width(), panel.width())
+                    self.assertLessEqual(top_left.y() + control.height(), panel.height())
+
+    def test_preset_browser_uses_pages_with_no_scrollbars(self):
+        window = SynthepyzerWindow()
+        self.addCleanup(window.close)
+        window.show()
+        self.app.processEvents()
+        browser = window.browser
+        self.assertEqual(browser.list.verticalScrollBarPolicy(), Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.assertEqual(browser.list.horizontalScrollBarPolicy(), Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        with tempfile.TemporaryDirectory() as directory:
+            for index in range(70):
+                (Path(directory) / f"patch-{index:03d}.spyzr").touch()
+            browser.set_directory(directory)
+            self.app.processEvents()
+            self.assertLess(browser.list.count(), 70)
+            self.assertTrue(browser.next_page.isEnabled())
+            first_page = browser.list.item(0).text()
+            browser.next_page.click()
+            self.assertTrue(browser.previous_page.isEnabled())
+            self.assertNotEqual(browser.list.item(0).text(), first_page)
+            self.assertLessEqual(browser.list.count(), browser._page_size())
 
 
 if __name__ == "__main__":
