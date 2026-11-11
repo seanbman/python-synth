@@ -12,10 +12,8 @@ from PyQt6.QtWidgets import (
     QApplication,
     QDockWidget,
     QFileDialog,
-    QLabel,
     QMainWindow,
     QMessageBox,
-    QScrollArea,
     QTabWidget,
     QVBoxLayout,
     QWidget,
@@ -39,23 +37,18 @@ class SynthepyzerWindow(QMainWindow):
         self._update_title()
 
     def _build_workspace(self) -> None:
-        self.setMinimumSize(1000, 720)
-        self.resize(1180, 820)
+        self.setMinimumSize(1000, 680)
+        self.resize(1180, 760)
         central = QWidget()
         layout = QVBoxLayout(central)
-        layout.setContentsMargins(8, 8, 8, 8)
-
-        intro = QLabel("Synthepyzer workspace · select a layer, shape its signal path, then save the patch")
-        layout.addWidget(intro)
+        layout.setContentsMargins(6, 4, 6, 4)
+        layout.setSpacing(4)
         self.tabs = QTabWidget()
         self.layer_panels: list[LayerPanel] = []
         for index, title in enumerate(("Layer A", "Layer B")):
             panel = LayerPanel(index, self.controller)
             self.layer_panels.append(panel)
-            scroll = QScrollArea()
-            scroll.setWidgetResizable(True)
-            scroll.setWidget(panel)
-            self.tabs.addTab(scroll, title)
+            self.tabs.addTab(panel, title)
         layout.addWidget(self.tabs, 1)
         layout.addWidget(MasterPanel(self.controller))
         self.setCentralWidget(central)
@@ -65,8 +58,10 @@ class SynthepyzerWindow(QMainWindow):
         self.browser.folderRequested.connect(self._choose_preset_folder)
         self.preset_dock = QDockWidget("Preset Browser", self)
         self.preset_dock.setObjectName("PresetBrowserDock")
+        self.browser.setMinimumWidth(205)
         self.preset_dock.setWidget(self.browser)
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.preset_dock)
+        self.resizeDocks([self.preset_dock], [220], Qt.Orientation.Horizontal)
 
     def _action(self, menu, text: str, slot, shortcut: str | None = None, enabled: bool = True):
         action = QAction(text, self)
